@@ -2,7 +2,6 @@ services:
   - type: web
     name: wildlife-api
     env: python
-    plan: free
     branch: main
     rootDir: backend
     buildCommand: pip install -r requirements-deploy.txt
@@ -22,7 +21,6 @@ services:
   - type: web
     name: wildlife-frontend
     env: static
-    plan: free
     branch: main
     rootDir: frontend
     buildCommand: npm install && npm run build
