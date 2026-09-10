@@ -2,7 +2,6 @@ services:
   - type: web
     name: wildlife-api
     env: python
-    region: oregon
     plan: free
     branch: main
     rootDir: backend
