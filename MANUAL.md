@@ -64,20 +64,42 @@ Use these to explore the different role-based dashboards:
 
 ## 3. Deploying to Render.com (Free Tier)
 
-This repository includes a `render.yaml` file configured specifically to fit Render's strict free tier limitations.
+We recommend deploying the backend as a **Web Service** and the frontend as a **Static Site** on Render to best utilize the free tier resources.
 
-> **Important ML Note for Free Tier:** Render's free tier only has 512MB of RAM. The AI models (TensorFlow and YOLO) require >1.5GB of RAM to run. Because of this, the `render.yaml` file uses `requirements-deploy.txt`, which explicitly *excludes* the ML libraries so your app doesn't crash from out-of-memory errors on the cloud. Everything else (auth, dashboards, reports, datasets, surveys) will work perfectly!
+> **Important ML Note for Free Tier:** Render's free tier only has 512MB of RAM. The AI models (TensorFlow and YOLO) require >1.5GB of RAM to run. Because of this, when deploying the backend, ensure you use `requirements-deploy.txt` which explicitly *excludes* the ML libraries so your app doesn't crash from out-of-memory errors. Everything else (auth, dashboards, reports, datasets, surveys) will work perfectly!
 
-### Deployment Steps:
-
+### Step 1: Push to GitHub
 1. Push this entire project folder to a **GitHub repository**.
 2. Go to [Render.com](https://render.com/) and create a free account.
-3. In the Render Dashboard, click **New +** and select **Blueprint**.
-4. Connect your GitHub account and select the repository you just pushed.
-5. Render will detect the `render.yaml` file. Give it a name and click **Apply**.
-6. Render will automatically spin up two services:
-   - `wildlife-api` (The FastAPI Backend)
-   - `wildlife-frontend` (The React Static Site)
-7. It will automatically link the frontend to the backend URL via environment variables.
+
+### Step 2: Deploy the Backend (Web Service)
+1. In the Render Dashboard, click **New +** and select **Web Service**.
+2. Connect your GitHub account and select your repository.
+3. Configure the service:
+   - **Name:** `wildlife-api` (or similar)
+   - **Root Directory:** `backend`
+   - **Environment:** `Python`
+   - **Build Command:** `pip install -r requirements-deploy.txt`
+   - **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+   - **Plan:** Free
+4. Add the following **Environment Variables**:
+   - `PYTHON_VERSION`: `3.11.0`
+   - `DATABASE_URL`: `sqlite:///./wildlife.db`
+   - `SECRET_KEY`: (Generate a random string)
+   - `REFRESH_SECRET_KEY`: (Generate a random string)
+   - `CORS_ORIGINS`: `*`
+5. Click **Create Web Service**. Wait for it to deploy and copy the provided external URL (e.g., `https://wildlife-api.onrender.com`).
+
+### Step 3: Deploy the Frontend (Static Site)
+1. Go back to the Render Dashboard, click **New +** and select **Static Site**.
+2. Select the same GitHub repository.
+3. Configure the site:
+   - **Name:** `wildlife-frontend` (or similar)
+   - **Root Directory:** `frontend`
+   - **Build Command:** `npm install && npm run build`
+   - **Publish directory:** `./dist`
+4. Add the following **Environment Variable**:
+   - `VITE_API_BASE_URL`: (Paste the external URL of your backend from Step 2, e.g., `https://wildlife-api.onrender.com`)
+5. Click **Create Static Site**.
 
 *Note: The first deploy on Render's free tier can take 5-10 minutes. If the backend sleeps due to inactivity, it may take 50 seconds to wake up on the next request.*
