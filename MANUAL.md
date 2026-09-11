@@ -25,7 +25,10 @@ This manual covers everything you need to run your project locally and host it o
    ```
 4. Copy the environment file:
    ```bash
+   # Windows:
    copy .env.example .env
+   # Mac/Linux:
+   cp .env.example .env
    ```
 5. Run the seed script to generate all demo data, sites, users, and incidents:
    ```bash

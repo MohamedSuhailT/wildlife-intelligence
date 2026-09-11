@@ -14,7 +14,7 @@ services:
       - key: REFRESH_SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: "*"
+        value: "https://wildlife-frontend.onrender.com"
       - key: PYTHON_VERSION
         value: 3.11.0
 
@@ -31,4 +31,3 @@ services:
           type: web
           name: wildlife-api
           envVarKey: RENDER_EXTERNAL_URL
-          property: ""

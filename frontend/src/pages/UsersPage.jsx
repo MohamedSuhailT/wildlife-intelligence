@@ -56,7 +56,7 @@ export default function UsersPage() {
           <form onSubmit={handleCreate} className="grid grid-3">
             <div className="form-group"><label className="form-label">Full Name</label><input className="form-input" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required /></div>
             <div className="form-group"><label className="form-label">Email</label><input type="email" className="form-input" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required /></div>
-            <div className="form-group"><label className="form-label">Password</label><input type="text" className="form-input" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={8} /></div>
+            <div className="form-group"><label className="form-label">Password</label><input type="password" autoComplete="new-password" className="form-input" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={8} /></div>
             <div className="form-group"><label className="form-label">Role</label>
               <select className="form-select" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
                 {ROLES.map(r => <option key={r} value={r}>{r.replace(/_/g, " ")}</option>)}

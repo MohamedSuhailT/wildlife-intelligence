@@ -1,4 +1,7 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1";
+let API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1";
+if (API_BASE && !API_BASE.endsWith("/api/v1")) {
+  API_BASE = API_BASE.replace(/\/+$/, "") + "/api/v1";
+}
 
 function getToken() {
   return localStorage.getItem("wpis_token");
@@ -160,17 +163,24 @@ export const api = {
 
   // Population Intelligence
   getPopulationCounts: (surveyId) => request(`/population/counts${surveyId ? `?survey_id=${surveyId}` : ""}`),
+  getPopulationDensity: (surveyId) => request(`/population/density?survey_id=${surveyId}`),
+  getPopulationMovement: (species) => request(`/population/movement?species=${encodeURIComponent(species)}`),
   getPopulationTrend: (species, { surveyId, windowDays = 30 } = {}) =>
     request(`/population/trend?species=${encodeURIComponent(species)}&window_days=${windowDays}${surveyId ? `&survey_id=${surveyId}` : ""}`),
   getPopulationDistribution: (surveyId) => request(`/population/distribution${surveyId ? `?survey_id=${surveyId}` : ""}`),
 
   // Habitat Intelligence
+  getHabitatSuitability: (siteId) => request(`/habitat/suitability${siteId ? `?site_id=${siteId}` : ""}`),
   getHabitatClassification: (siteId) => request(`/habitat/sites/${siteId}/classification`),
   getHabitatDegradation: (siteId) => request(`/habitat/sites/${siteId}/degradation`),
 
   // Conservation
   getThreats: () => request("/conservation/threats"),
   getConservationPriorities: () => request("/conservation/priorities"),
+  getMonitoringOptimization: () => request("/conservation/optimization"),
+  getResourceAllocation: () => request("/conservation/resources"),
+  getConservationRestoration: () => request("/conservation/restoration"),
+  updateRestorationStatus: (id, payload) => request(`/conservation/restoration/${id}`, { method: "PATCH", body: payload }),
 
   // Ecosystem Health
   getHealthScore: ({ siteId, surveyId } = {}) => {
@@ -195,7 +205,7 @@ export const api = {
   updateIncident: (incidentId, payload) => request(`/incidents/${incidentId}`, { method: "PATCH", body: payload }),
 
   // GIS
-  getGisSensors: () => request("/gis/sensors"),
+  getGisSensors: (surveyId) => request(`/gis/sensors${surveyId ? `?survey_id=${surveyId}` : ""}`),
   getGisAllLayers: () => request("/gis/all-layers"),
 
   // Reports

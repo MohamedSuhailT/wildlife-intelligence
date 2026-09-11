@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { api, getToken } from "../api/client";
+import { api } from "../api/client";
 
 export default function SpeciesRecognitionPage() {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [naturalDims, setNaturalDims] = useState({ w: 1, h: 1 });
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -108,9 +109,9 @@ export default function SpeciesRecognitionPage() {
           
           {preview && mode === "image" && (
             <div style={{ position: "relative", marginBottom: "1rem", borderRadius: "var(--radius-md)", overflow: "hidden" }}>
-              <img src={preview} alt="Upload preview" style={{ width: "100%", display: "block" }} />
+              <img src={preview} alt="Upload preview" style={{ width: "100%", display: "block" }} onLoad={(e) => setNaturalDims({ w: e.target.naturalWidth || 1, h: e.target.naturalHeight || 1 })} />
               {result?.type === "image" && result.detection?.detections.map((d, i) => (
-                <div key={i} style={{ position: "absolute", border: "2px solid var(--accent-cyan)", left: d.bbox.x, top: d.bbox.y, width: d.bbox.width, height: d.bbox.height }}>
+                <div key={i} style={{ position: "absolute", border: "2px solid var(--accent-cyan)", left: `${(d.bbox.x / naturalDims.w) * 100}%`, top: `${(d.bbox.y / naturalDims.h) * 100}%`, width: `${(d.bbox.width / naturalDims.w) * 100}%`, height: `${(d.bbox.height / naturalDims.h) * 100}%` }}>
                   <span style={{ position: "absolute", top: -20, left: -2, background: "var(--accent-cyan)", color: "#000", fontSize: "0.65rem", fontWeight: "bold", padding: "2px 4px", whiteSpace: "nowrap" }}>
                     {d.label} ({(d.confidence * 100).toFixed(0)}%)
                   </span>
